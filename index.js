@@ -1,6 +1,7 @@
 // Example express application adding the parse-server module to expose Parse
 // compatible API routes.
 
+import 'dotenv/config';
 import express from 'express';
 import { ParseServer } from 'parse-server';
 import path from 'path';
@@ -8,11 +9,10 @@ const __dirname = path.resolve();
 import http from 'http';
 
 export const config = {
-  databaseURI:
-    process.env.DATABASE_URI || process.env.MONGODB_URI || 'mongodb://localhost:27017/dev',
+  databaseURI: process.env.DB_URI || process.env.MONGODB_URI || 'mongodb://localhost:27017/dev',
   cloud: process.env.CLOUD_CODE_MAIN || __dirname + '/cloud/main.js',
   appId: process.env.APP_ID || 'myAppId',
-  masterKey: process.env.MASTER_KEY || '', //Add your master key here. Keep it secret!
+  masterKey: process.env.MASTER_KEY || 'myMasterKey', //Add your master key here. Keep it secret!
   serverURL: process.env.SERVER_URL || 'http://localhost:1337/parse', // Don't forget to change to https if needed
   liveQuery: {
     classNames: ['Posts', 'Comments'], // List of classes to support for query subscriptions
@@ -47,7 +47,7 @@ app.get('/test', function (req, res) {
 });
 
 if (!process.env.TESTING) {
-  const port = process.env.PORT || 1337;
+  const port = process.env.SERVER_PORT || 1337;
   const httpServer = http.createServer(app);
   httpServer.listen(port, function () {
     console.log('parse-server-example running on port ' + port + '.');
