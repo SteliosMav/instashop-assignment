@@ -103,8 +103,12 @@ Parse.Cloud.define('fetchLandmarks', ({ params }) => {
  */
 Parse.Cloud.define('saveLandmark', async ({ params, user }) => {
   const sessionToken = user ? user.getSessionToken() : undefined;
+  // Below non-text fields are excluded
+  const { objectId, location, photo_thumb, photo, url, order, ...incomingChanges } = params;
+  if (typeof objectId !== 'string' || objectId === '')
+    throw new Parse.Error(Parse.Error.MISSING_OBJECT_ID, 'Invalid object id');
   const Landmark = Parse.Object.extend('Landmark');
   const query = new Parse.Query(Landmark);
-  const landmark = await query.get(params.objectId);
-  return landmark.save(params, { sessionToken });
+  const landmark = await query.get(objectId);
+  return landmark.save(incomingChanges, { sessionToken });
 });
