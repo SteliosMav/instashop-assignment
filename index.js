@@ -4,9 +4,18 @@
 import 'dotenv/config';
 import express from 'express';
 import { ParseServer } from 'parse-server';
+import rateLimit from 'express-rate-limit';
 import path from 'path';
 const __dirname = path.resolve();
 import http from 'http';
+
+// Configure rate limiting options for failed login attempts
+const rateLimitOptions = {
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5, // 5 attempts
+  message: 'Too many login attempts from this IP, please try again later.',
+  skipSuccessfulRequests: true,
+};
 
 export const config = {
   databaseURI: process.env.DB_URI || process.env.MONGODB_URI || 'mongodb://localhost:27017/dev',
@@ -23,6 +32,8 @@ export const config = {
 // javascriptKey, restAPIKey, dotNetKey, clientKey
 
 export const app = express();
+
+app.use('/parse/functions/login', rateLimit(rateLimitOptions));
 
 // Serve static assets from the /public folder
 app.use('/public', express.static(path.join(__dirname, '/public')));
