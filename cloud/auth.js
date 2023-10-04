@@ -50,6 +50,7 @@ Parse.Cloud.define('authenticate', async ({ user }) => {
   return user;
 });
 
-Parse.Cloud.define('logout', async req => {
-  return Parse.User.logOut();
+Parse.Cloud.define('logout', async ({ user }) => {
+  const sessionToken = user ? user.getSessionToken() : undefined;
+  return Parse.User.logOut({ sessionToken });
 });
